@@ -7,5 +7,10 @@ urlpatterns = [
     path("ping", views.pong, name='pong'),
     path("userInfo", views.userInfo, name='userInfo'),
     path("userRecommendation", views.userRecommendation, name='userRecommendation'),
-    path("recommendationByUser", views.recommendationByUser, name='recommendationByUser')
+    path("recommendationByUser", views.recommendationByUser, name='recommendationByUser'),
+    path("itemRecommendation", views.itemRecommendation, name='itemRecommendation'),
+    path("recommendationByItem", views.recommendationByItem, name='recommendationByItem'),
+    path("generateImage", views.generateImage, name='generateImage'),
+    path("generatePrompt", views.generatePrompt, name='generatePrompt'),
+
 ]
