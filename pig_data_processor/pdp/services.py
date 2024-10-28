@@ -13,15 +13,13 @@ from tensorflow import keras
 import pprint
 from openai import OpenAI
 
-
-from tensorflow.keras.preprocessing.text import Tokenizer
-from keras.preprocessing.sequence import pad_sequences
-from keras.models import Sequential
-from keras.layers import Embedding, LSTM, Dense
+from keras._tf_keras.keras.preprocessing.text import Tokenizer
+from keras._tf_keras.keras.models import Sequential
+from keras._tf_keras.keras.layers import Embedding, LSTM, Dense
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import OneHotEncoder
-from keras.utils import to_categorical
-from keras.optimizers import Adam
+from keras_preprocessing.sequence import pad_sequences
+from keras._tf_keras.keras.optimizers import Adam
 import google.generativeai as genai
 from django.shortcuts import render
 from googleapiclient.discovery import build

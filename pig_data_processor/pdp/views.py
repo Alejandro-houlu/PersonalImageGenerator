@@ -65,7 +65,9 @@ def recommendationByItem(request):
     except Exception as ex:
         print(f"Error getting item recommendation: {str(ex)}")
         return HttpResponse ('Error getting item recommendation', status=400)
-    
+
+# The following 2 apis are just for testing, users will not have access to them - they don't work now 
+# To make them work, add the right params, see services methods for the right params
 @csrf_exempt
 @require_GET
 def generatePrompt(request):
@@ -75,6 +77,6 @@ def generatePrompt(request):
 @csrf_exempt
 @require_GET
 def generateImage(request):
-    imageUrl = services.generate_image('00004557432be3eeec63b4926113154e', 'black t-shirt')
+    imageUrl = services.generate_image('00004557432be3eeec63b4926113154e', 't-shirt')
     response_json = json.dumps(imageUrl)
     return HttpResponse (response_json, status=200)
