@@ -4,27 +4,11 @@
         <ng-container>
             <a class="logo" href="/">
                 <span class="inline-block dark:hidden">
-                    <img src="assets/images/logo-dark.png" class="l-dark" alt="">
-                    <img src="assets/images/logo-light.png" class="l-light" alt="">
+                    <img src="assets/images/logo-icon-64.png" class="l-light" alt="">
                 </span>
-                <img src="assets/images/logo-white.png" class="hidden dark:inline-block" alt="">
             </a>
         </ng-container>
         <!-- End Logo container-->
-
-        <!-- Start Mobile Toggle -->
-        <div class="menu-extras">
-            <div class="menu-item">
-                <a class="navbar-toggle" [ngClass]="toggleManu ? 'open' : '' " id="isToggle" (click)="toggleMenu()">
-                    <div class="lines">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
-                </a>
-            </div>
-        </div>
-        <!-- End Mobile Toggle -->
 
         <!--Login button Start-->
         <ul class="buy-button list-none mb-0">
@@ -32,18 +16,23 @@
                 <ng-container>
                     <button (click)="searchModal()" class="dropdown-toggle align-middle inline-flex search-dropdown" type="button">
                         <i data-feather="search" class="size-5 dark-icon"></i>
-                        <i data-feather="search" class="size-5 white-icon text-white"></i>
+                        <i data-feather="search" class="size-5"></i>
                     </button>
                 </ng-container>
                 <!-- Dropdown menu -->
                 <div class="dropdown-menu absolute overflow-hidden end-0 m-0 mt-5 z-10 md:w-52 w-48 rounded-md bg-white dark:bg-slate-900 shadow dark:shadow-gray-800" [ngClass]="searchManu ? '' : 'hidden' ">
                     <div class="relative">
-                        <i data-feather="search" class="absolute size-4 top-[9px] end-3 text-slate-900 dark:text-white"></i>
-                        <input type="text" class="h-9 px-3 pe-10 w-full border-0 focus:ring-0 outline-none bg-white dark:bg-slate-900" name="s" id="searchItem" placeholder="Search...">
+                            <button type="button" (click)="onSearchButtonClick()" 
+                                class="absolute top-[6px] end-3 bg-transparent border-0 p-0 cursor-pointer text-slate-900 dark:text-white">
+                                <i data-feather="search" class="size-4"></i>
+                            </button>
+                        <!-- <i data-feather="search" class="absolute size-4 top-[9px] end-3 text-slate-900 dark:text-white"></i> -->
+                        <input type="text" (input)="onSearchInput($event)" class="h-9 px-3 pe-10 w-full border-0 focus:ring-0 outline-none bg-white dark:bg-slate-900" name="s" id="searchItem" placeholder="Search...">
                     </div>
                 </div>
             </li>
 
+            <!-- Hardcoded section -->
             <li class="dropdown inline-block relative ps-0.5" (clickOutside)="closeCartModal()">
                 <button class="dropdown-toggle size-9 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-base text-center rounded-full bg-orange-500 border border-orange-500 text-white" type="button" (click)="cartModal()">
                     <i data-feather="shopping-cart" class="h-4 w-4"></i>
@@ -110,6 +99,7 @@
                     </ul>
                 </div>
             </li>
+            <!-- End of hardcorded section for aestetics -->
 
             <li class="inline-block ps-0.5">
                 <a href="#" class="size-9 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-base text-center rounded-full bg-orange-500 text-white">
@@ -125,7 +115,7 @@
                 <div class="dropdown-menu absolute end-0 m-0 mt-4 z-10 w-48 rounded-md overflow-hidden bg-white dark:bg-slate-900 shadow dark:shadow-gray-700" [ngClass]="user ? '' : 'hidden' ">
                     <ul class="py-2 text-start">
                         <li>
-                            <p class="text-slate-400 pt-2 px-4">Welcome Jesus!</p>
+                            <p class="text-slate-400 pt-2 px-4">Welcome {{userId | slice:0:10}}</p>
                         </li>
                         <li>
                             <p class="flex items-center font-medium py-2 px-4"><i data-feather="dollar-sign" class="h-4 w-4 me-2"></i> Balance: <span class="text-orange-500 ms-2">$ 245.10</span></p>
@@ -152,206 +142,21 @@
         <div id="navigation" [ngClass]="toggleManu ? 'block' : 'none' ">
             <!-- Navigation Menu-->
             <ul class="navigation-menu">
-                <li class="has-submenu parent-parent-menu-item" [ngClass]="['/product-item'].includes(manu) ? 'active' : ''">
-                    <a href="#" (click)="openManu('/product-item')">Products</a><span class="menu-arrow"></span>
+                <li class="has-submenu parent-parent-menu-item">
+                    <a [routerLink]="['/history',userId]">History</a>
+            
 
-                    <ul class="submenu megamenu" [ngClass]="['/product-item'].includes(subManu) ? 'open' : ''">
-                        <li>
-                            <ul>
-                                <li class="megamenu-head">Product Features</li>
-                                <li><a href="#" class="sub-menu-item">Bundle - Upsell</a></li>
-                                <li><a href="#" class="sub-menu-item">Hot Stock</a></li>
-                                <li><a href="#" class="sub-menu-item">Sticky Add To Cart</a></li>
-                                <li><a href="#" class="sub-menu-item">Notify Me (Out Of Stock)</a></li>
-                                <li><a href="#" class="sub-menu-item">Ask An Expert</a></li>
-                                <li><a href="#" class="sub-menu-item">Variant Image Grouped</a></li>
-                                <li><a href="#" class="sub-menu-item">Wishlist</a></li>
-                                <li><a href="#" class="sub-menu-item">Trust Badge</a></li>
-                                <li><a href="#" class="sub-menu-item">Delivery Information</a></li>
-                            </ul>
-                        </li>
-
-                        <li>
-                            <ul>
-                                <li class="megamenu-head">Product Features</li>
-                                <li><a href="#" class="sub-menu-item">Sold In Last</a></li>
-                                <li><a href="#" class="sub-menu-item">Color Comparison</a></li>
-                                <li><a href="#" class="sub-menu-item">Product Swatches</a></li>
-                                <li><a href="#" class="sub-menu-item">Product Select Options</a></li>
-                                <li><a href="#" class="sub-menu-item">Pre-Order</a></li>
-                                <li><a href="#" class="sub-menu-item">Product 3D, AR Models</a></li>
-                                <li><a href="#" class="sub-menu-item">Terms And Conditions Checkbox</a></li>
-                                <li><a href="#" class="sub-menu-item">Variant Metafield Description</a></li>
-                                <li><a href="#" class="sub-menu-item">Variant Metafield Property</a></li>
-                            </ul>
-                        </li>
-
-                        <li>
-                            <ul>
-                                <li class="megamenu-head">Product Features</li>
-                                <li><a href="#" class="sub-menu-item">Product Video</a></li>
-                                <li><a href="#" class="sub-menu-item">Size Chart</a></li>
-                                <li><a href="#" class="sub-menu-item">Dynamic Checkout</a></li>
-                                <li><a href="#" class="sub-menu-item">Product Countdown</a></li>
-                                <li><a href="#" class="sub-menu-item">Custom Content</a></li>
-                                <li><a href="#" class="sub-menu-item">Custom Options</a></li>
-                                <li><a href="#" class="sub-menu-item">Product Combo</a></li>
-                                <li><a href="#" class="sub-menu-item">Product Complementary</a></li>
-                                <li><a href="#" class="sub-menu-item">Auto Discount</a></li>
-                            </ul>
-                        </li>
-                
-                        <li>
-                            <ul>
-                                <li class="megamenu-head">Product Features</li>
-                                <li><a href="#" class="sub-menu-item">Custom Product Tabs</a></li>
-                                <li><a href="#" class="sub-menu-item">Vertical Product Tab</a></li>
-                                <li><a href="#" class="sub-menu-item">Horizontal Product Tab</a></li>
-                                <li><a href="#" class="sub-menu-item">Social Share</a></li>
-                                <li><a href="#" class="sub-menu-item">Related Products</a></li>
-                                <li><a href="#" class="sub-menu-item">Recently Viewed Products</a></li>
-                                <li><a href="#" class="sub-menu-item">Custom Label</a></li>
-                                <li><a href="#" class="sub-menu-item">Local Pick Up</a></li>
-                            </ul>
-                        </li>
-                
-                        <li>
-                            <ul>
-                                <li class="megamenu-head"><img src="assets/images/cta.png" alt=""></li>
-
-                                <li class="text-center"><a href="#" class="py-2 px-5 inline-block font-medium tracking-wide align-middle duration-500 text-base text-center bg-orange-500/10 text-orange-500 rounded-md me-2 mt-2"><i class="mdi mdi-cart-outline"></i> Shop Now</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-
-                <li class="has-submenu parent-parent-menu-item" [ngClass]="['/shop-grid', '/shop-grid-left-sidebar', '/shop-grid-right-sidebar','/shop-list','/shop-list-left-sidebar','/shop-list-right-sidebar','/product-detail-one','/product-detail-two','/product-detail-three','/shop-cart','/shop-checkout','/our-store','/brands','/compare-product','/recently-viewed-product','/grid-item','/list-item','/detail-item','/shop-item'].includes(manu) ? 'active' : ''"><a href="#" (click)="openManu('/shop-item')"> Shop </a><span class="menu-arrow"></span>
-                    <ul class="submenu" [ngClass]="['/shop-grid', '/shop-grid-left-sidebar', '/shop-grid-right-sidebar','/shop-list','/shop-list-left-sidebar','/shop-list-right-sidebar','/product-detail-one','/product-detail-two','/product-detail-three','/shop-cart','/shop-checkout','/our-store','/brands','/compare-product','/recently-viewed-product','/grid-item','/list-item','/detail-item','/shop-item'].includes(subManu) ? 'open' : ''">
-
-                        <li class="has-submenu parent-menu-item" [ngClass]="['/shop-grid', '/shop-grid-left-sidebar', '/shop-grid-right-sidebar','/grid-item'].includes(manu) ? 'active' : ''">
-                            <a href="#" (click)="openManu('/grid-item')"> Shop Grid </a><span class="submenu-arrow"></span>
-                            <ul class="submenu" [ngClass]="['/shop-grid', '/shop-grid-left-sidebar', '/shop-grid-right-sidebar','/grid-item'].includes(subManu) ? 'open' : ''">
-                                <li [ngClass]="manu === '/shop-grid' ? 'active' : '' "><a routerLink="/shop-grid" class="sub-menu-item">Shop Grid</a></li>
-                                <li [ngClass]="manu === '/shop-grid-left-sidebar' ? 'active' : '' "><a routerLink="/shop-grid-left-sidebar" class="sub-menu-item">Grid Left Sidebar</a></li>
-                                <li [ngClass]="manu === '/shop-grid-right-sidebar' ? 'active' : '' "><a routerLink="/shop-grid-right-sidebar" class="sub-menu-item">Grid Right Sidebar</a></li>
-                            </ul>  
-                        </li>
-
-                        <li class="has-submenu parent-menu-item" [ngClass]="['/shop-list', '/shop-list-left-sidebar', '/shop-list-right-sidebar','/list-item'].includes(manu) ? 'active' : ''">
-                            <a href="#" (click)="openManu('/list-item')"> Shop List </a><span class="submenu-arrow"></span>
-                            <ul class="submenu" [ngClass]="['/shop-list', '/shop-list-left-sidebar', '/shop-list-right-sidebar','/list-item'].includes(subManu) ? 'open' : ''">
-                                <li [ngClass]="manu === '/shop-list' ? 'active' : '' "><a routerLink="/shop-list" class="sub-menu-item">Shop List</a></li>
-                                <li [ngClass]="manu === '/shop-list-left-sidebar' ? 'active' : '' "><a routerLink="/shop-list-left-sidebar" class="sub-menu-item">List Left Sidebar</a></li>
-                                <li [ngClass]="manu === '/shop-list-right-sidebar' ? 'active' : '' "><a routerLink="/shop-list-right-sidebar" class="sub-menu-item">List Right Sidebar</a></li>
-                            </ul>  
-                        </li>
-
-                        <li class="has-submenu parent-menu-item" [ngClass]="['/product-detail-one', '/product-detail-two', '/product-detail-three','/detail-item'].includes(manu) ? 'active' : ''">
-                            <a href="#" (click)="openManu('/detail-item')"> Shop Detail </a><span class="submenu-arrow"></span>
-                            <ul class="submenu" [ngClass]="['/product-detail-one', '/product-detail-two', '/product-detail-three','/detail-item'].includes(subManu) ? 'open' : ''">
-                                <li [ngClass]="manu === '/product-detail-one' ? 'active' : '' "><a routerLink="/product-detail-one" class="sub-menu-item">Product Detail One</a></li>
-                                <li [ngClass]="manu === '/product-detail-two' ? 'active' : '' "><a routerLink="/product-detail-two" class="sub-menu-item">Product Detail Two</a></li>
-                                <li [ngClass]="manu === '/product-detail-three' ? 'active' : '' "><a routerLink="/product-detail-three" class="sub-menu-item">Product Detail Three</a></li>
-                            </ul>  
-                        </li>
-                        <li [ngClass]="manu === '/shop-cart' ? 'active' : '' "><a routerLink="/shop-cart" class="sub-menu-item">Shop Cart</a></li>
-                        <li [ngClass]="manu === '/shop-checkout' ? 'active' : '' "><a routerLink="/shop-checkout" class="sub-menu-item">Checkout</a></li>
-                        <li [ngClass]="manu === '/our-store' ? 'active' : '' "><a routerLink="/our-store" class="sub-menu-item">Our Store</a></li>
-                        <li [ngClass]="manu === '/brands' ? 'active' : '' "><a routerLink="/brands" class="sub-menu-item">Brands</a></li>
-                        <li [ngClass]="manu === '/compare-product' ? 'active' : '' "><a routerLink="/compare-product" class="sub-menu-item">Compare Product</a></li>
-                        <li [ngClass]="manu === '/recently-viewed-product' ? 'active' : '' "><a routerLink="/recently-viewed-product" class="sub-menu-item">Recently Viewed Products</a></li>
-                    </ul>
+                <li class="has-submenu parent-parent-menu-item">
+                    <a [routerLink]="['/shop',userId]">Shop</a>
                 </li>
         
-                <li class="has-submenu parent-parent-menu-item" [ngClass]="['/aboutus', '/user-account', '/user-billing','/user-payment','/user-invoice','/user-social','/user-notification','/user-setting','/blogs','/blog-detail','/career','/helpcenter','/helpcenter-faqs','/helpcenter-guides','/helpcenter-support','/terms','/privacy','/page-item','/user-item','/mail-item','/blog-item','/help-item','/auth-item','/utility-item','/special-item','/multi-item','/multi-item-1'].includes(manu) ? 'active' : ''">
-                    <a href="#" (click)="openManu('/page-item')">Pages</a><span class="menu-arrow"></span>
-                    <ul class="submenu" [ngClass]="['/aboutus', '/user-account', '/user-billing','/user-payment','/user-invoice','/user-social','/user-notification','/user-setting','/blogs','/blog-detail','/career','/helpcenter','/helpcenter-faqs','/helpcenter-guides','/helpcenter-support','/terms','/privacy','/page-item','/user-item','/mail-item','/blog-item','/help-item','/auth-item','/utility-item','/special-item','/multi-item','/multi-item-1'].includes(subManu) ? 'open' : ''">
-                        <li [ngClass]="manu === '/aboutus' ? 'active' : '' "><a routerLink="/aboutus" class="sub-menu-item">About Us</a></li>
-
-                        <li class="has-submenu parent-menu-item" [ngClass]="['/user-account','/user-billing','/user-payment','/user-invoice','/user-social','/user-notification','/user-setting','/user-item'].includes(manu) ? 'active' : '' "><a href="#" (click)="openManu('/user-item')"> My Account</a><span class="submenu-arrow"></span>
-                            <ul class="submenu" [ngClass]="['/user-account','/user-billing','/user-payment','/user-invoice','/user-social','/user-notification','/user-setting','/user-item'].includes(subManu) ? 'open' : '' ">
-                                <li [ngClass]="manu === '/user-account' ? 'active' : '' "><a routerLink="/user-account" class="sub-menu-item">User Account</a></li>
-                                <li [ngClass]="manu === '/user-billing' ? 'active' : '' "><a routerLink="/user-billing" class="sub-menu-item">Billing</a></li>
-                                <li [ngClass]="manu === '/user-payment' ? 'active' : '' "><a routerLink="/user-payment" class="sub-menu-item">Payment</a></li>
-                                <li [ngClass]="manu === '/user-invoice' ? 'active' : '' "><a routerLink="/user-invoice" class="sub-menu-item">Invoice</a></li>
-                                <li [ngClass]="manu === '/user-social' ? 'active' : '' "><a routerLink="/user-social" class="sub-menu-item">Social</a></li>
-                                <li [ngClass]="manu === '/user-notification' ? 'active' : '' "><a routerLink="/user-notification" class="sub-menu-item">Notification</a></li>
-                                <li [ngClass]="manu === '/user-setting' ? 'active' : '' "><a routerLink="/user-setting" class="sub-menu-item">Setting</a></li>
-                            </ul> 
-                        </li>
-
-                        <li class="has-submenu parent-menu-item" [ngClass]="['/email-confirmation','/email-cart','/email-offers','/email-order-success','/email-gift-voucher','/email-reset-password','/email-item-review','/mail-item'].includes(manu) ? 'active' : '' "><a href="#" (click)="openManu('/mail-item')"> Email Template </a><span class="submenu-arrow"></span>
-                            <ul class="submenu" [ngClass]="['/email-confirmation','/email-cart','/email-offers','/email-order-success','/email-gift-voucher','/email-reset-password','/email-item-review','/mail-item'].includes(subManu) ? 'open' : '' ">
-                                <li><a routerLink="/email-confirmation" class="sub-menu-item"> Confirmation</a></li>
-                                <li><a routerLink="/email-cart" class="sub-menu-item"> Cart</a></li>
-                                <li><a routerLink="/email-offers" class="sub-menu-item"> Offers</a></li>
-                                <li><a routerLink="/email-order-success" class="sub-menu-item"> Order Success</a></li>
-                                <li><a routerLink="/email-gift-voucher" class="sub-menu-item"> Gift Voucher</a></li>
-                                <li><a routerLink="/email-reset-password" class="sub-menu-item"> Reset Password</a></li>
-                                <li><a routerLink="/email-item-review" class="sub-menu-item"> Item Review</a></li>
-                            </ul> 
-                        </li>
-                
-                        <li class="has-submenu parent-menu-item" [ngClass]="['/blogs','/blog-detail','/blog-item'].includes(manu) ? 'active' : '' "><a href="#" (click)="openManu('/blog-item')"> Blog </a><span class="submenu-arrow"></span>
-                            <ul class="submenu" [ngClass]="['/blogs','/blog-detail','/blog-item'].includes(subManu) ? 'open' : '' ">
-                                <li [ngClass]="manu === '/blogs' ? 'active' : '' "><a routerLink="/blogs" class="sub-menu-item"> Blogs</a></li>
-                                <li [ngClass]="manu === '/blog-detail' ? 'active' : '' "><a routerLink="/blog-detail" class="sub-menu-item"> Blog Detail</a></li>
-                            </ul> 
-                        </li>
-
-                        <li [ngClass]="manu === '/career' ? 'active' : '' "><a routerLink="/career" class="sub-menu-item">Career </a></li>
-                
-                        <li class="has-submenu parent-menu-item" [ngClass]="['/helpcenter','/helpcenter-faqs','/helpcenter-guides','/helpcenter-support','/help-item'].includes(manu) ? 'active' : '' ">
-                            <a href="#" (click)="openManu('/help-item')"> Helpcenter </a><span class="submenu-arrow"></span>
-                            <ul class="submenu" [ngClass]="['/helpcenter','/helpcenter-faqs','/helpcenter-guides','/helpcenter-support','/help-item'].includes(subManu) ? 'open' : '' ">
-                                <li [ngClass]="manu === '/helpcenter' ? 'active' : '' "><a routerLink="/helpcenter" class="sub-menu-item">Overview</a></li>
-                                <li [ngClass]="manu === '/helpcenter-faqs' ? 'active' : '' "><a routerLink="/helpcenter-faqs" class="sub-menu-item">FAQs</a></li>
-                                <li [ngClass]="manu === '/helpcenter-guides' ? 'active' : '' "><a routerLink="/helpcenter-guides" class="sub-menu-item">Guides</a></li>
-                                <li [ngClass]="manu === '/helpcenter-support' ? 'active' : '' "><a routerLink="/helpcenter-support" class="sub-menu-item">Support</a></li>
-                            </ul>  
-                        </li>
-
-                        <li class="has-submenu parent-menu-item" [ngClass]="['/login','/signup','/forgot-password','/lock-screen','/auth-item'].includes(manu) ? 'active' :'' "><a href="#" (click)="openManu('/auth-item')"> Auth Pages </a><span class="submenu-arrow"></span>
-                            <ul class="submenu" [ngClass]="['/login','/signup','/forgot-password','/lock-screen','/auth-item'].includes(subManu) ? 'open' :'' ">
-                                <li><a routerLink="/login" class="sub-menu-item"> Login</a></li>
-                                <li><a routerLink="/signup" class="sub-menu-item"> Signup</a></li>
-                                <li><a routerLink="/forgot-password" class="sub-menu-item"> Forgot Password</a></li>
-                                <li><a routerLink="/lock-screen" class="sub-menu-item"> Lock Screen</a></li>
-                            </ul> 
-                        </li>
-
-                        <li class="has-submenu parent-menu-item" [ngClass]="['/terms','/privacy','/utility-item'].includes(manu) ? 'active' : '' "><a href="#" (click)="openManu('/utility-item')"> Utility </a><span class="submenu-arrow"></span>
-                            <ul class="submenu" [ngClass]="['/terms','/privacy','/utility-item'].includes(subManu) ? 'open' : '' ">
-                                <li [ngClass]="manu === '/terms' ? 'active' : '' "><a routerLink="/terms" class="sub-menu-item">Terms of Services</a></li>
-                                <li [ngClass]="manu === '/privacy' ? 'active' : '' "><a routerLink="/privacy" class="sub-menu-item">Privacy Policy</a></li>
-                            </ul>  
-                        </li>
-
-                        <li class="has-submenu parent-menu-item" [ngClass]="['/comingsoon','/maintenance','/error','/special-item'].includes(manu) ? 'active' :'' "><a href="#" (click)="openManu('/special-item')"> Special </a><span class="submenu-arrow"></span>
-                            <ul class="submenu" [ngClass]="['/comingsoon','/maintenance','/error','/special-item'].includes(subManu) ? 'open' :'' ">
-                                <li><a routerLink="/comingsoon" class="sub-menu-item"> Coming Soon</a></li>
-                                <li><a routerLink="/maintenance" class="sub-menu-item"> Maintenance</a></li>
-                                <li><a routerLink="/error" class="sub-menu-item"> 404!</a></li>
-                            </ul> 
-                        </li>
-
-                        <li class="has-submenu parent-menu-item" [ngClass]="['/multi-item','/multi-item-1'].includes(manu) ? 'active' : '' "><a href="#" (click)="openManu('/multi-item')"> Multi Level Menu</a><span class="submenu-arrow"></span>
-                            <ul class="submenu" [ngClass]="['/multi-item','/multi-item-1'].includes(subManu) ? 'open' : '' ">
-                                <li><a href="#" class="sub-menu-item">Level 1.0</a></li>
-                                <li class="has-submenu child-menu-item" [ngClass]="['/multi-item-1'].includes(manu) ? 'active' : '' "><a href="#" (click)="openManu('/multi-item-1')"> Level 2.0 </a><span class="submenu-arrow"></span>
-                                    <ul class="submenu" [ngClass]="['/multi-item-1'].includes(subManu) ? 'open' : '' ">
-                                        <li><a href="#" class="sub-menu-item">Level 2.1</a></li>
-                                        <li><a href="#" class="sub-menu-item">Level 2.2</a></li>
-                                    </ul>  
-                                </li>
-                            </ul>  
-                        </li>
-                    </ul>
+                <li class="has-submenu parent-parent-menu-item">
+                    <a [routerLink]="['/personalImages',userId]">Just for you</a>
                 </li>
         
-                <li [ngClass]="manu === '/sale' ? 'active' : '' "><a routerLink="/sale" class="sub-menu-item">Sale</a></li>
+                <li><a routerLink="#" class="sub-menu-item">Sale</a></li>
 
-                <li [ngClass]="manu === '/contact' ? 'active' : '' "><a routerLink="/contact" class="sub-menu-item">Contact</a></li>
+                <li><a routerLink="#" class="sub-menu-item">Contact</a></li>
             </ul><!--end navigation menu-->
         </div><!--end navigation-->
     </div><!--end container-->

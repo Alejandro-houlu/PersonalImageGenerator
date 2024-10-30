@@ -17,17 +17,32 @@ def pong(request):
         return HttpResponse('invalid request',status=400)
 
 @csrf_exempt
-@require_GET
+@require_POST
 def userInfo(request):
-    userId = request.GET.get('userId')
+    data = json.loads(request.body)
+    userId = data.get('userId')
     userId_and_purchaseHistory = services.getUserInfoById(userId) # Object
     response_json = json.dumps(userId_and_purchaseHistory)
     return HttpResponse(response_json, status=200)
 
 @csrf_exempt
 @require_GET
+def searchItem(request):
+    searchTerm = request.GET.get('searchTerm')
+    try:
+        result = services.search_items(searchTerm)
+        response_json = json.dumps(result)
+        return HttpResponse(response_json, status=200)
+    except Exception as ex:
+        print(f"Error in searching item: {str(ex)}")
+        return HttpResponse ('Error in search item', status=400)
+
+@csrf_exempt
+@require_POST
 def recommendationByUser(request):
-    userId = request.GET.get('userId')
+    data = json.loads(request.body)
+    userId = data.get('userId')
+    print(userId)    
     userId_and_purchaseHistory = services.getUserRecommendationByUserId(userId) # Object
     response_json = json.dumps(userId_and_purchaseHistory)
     return HttpResponse(response_json, status=200)
@@ -57,7 +72,10 @@ def itemRecommendation(request):
 def recommendationByItem(request):
     itemId = request.GET.get('itemId')
     userId = request.GET.get('userId')
-    item = request.GET.get('item')
+    item = request.GET.get('searchTerm')
+    print(itemId)
+    print(userId)
+    print('Search term------------------->',item)
     try:
         recommendedItems = services.recommend_similar_items(itemId, 5, userId,item)
         response_json = json.dumps(recommendedItems)
@@ -80,3 +98,11 @@ def generateImage(request):
     imageUrl = services.generate_image('00004557432be3eeec63b4926113154e', 't-shirt')
     response_json = json.dumps(imageUrl)
     return HttpResponse (response_json, status=200)
+
+@csrf_exempt
+@require_GET
+def getPersonalizedItems(request):
+    userId = request.GET.get('userId')
+    result = services.getGeneratedImages(userId)
+    response_json = json.dumps(result)
+    return HttpResponse(response_json,status=200)
