@@ -17,6 +17,7 @@ export class NavbarComponent {
   toggleManu:boolean = false;
   manu:string = '';
   subManu: string = '';
+  searchInput!:string;
 
   constructor(private router: Router){}
 
@@ -37,6 +38,18 @@ export class NavbarComponent {
   }
   closeSearchModal(){
     this.searchManu = false;
+  }
+
+  onSearchInput(event: Event){
+    let input = event.target as HTMLInputElement
+    console.info(input.value)
+    this.searchInput = input.value
+  }
+  onSearchButtonClick(){
+    console.info(this.searchInput)
+    if(this.searchInput !== undefined && this.searchInput.trim() !== '' ){
+      this.router.navigate(['/searchPage',this.searchInput,this.userId])
+    }
   }
   
   //user-modal

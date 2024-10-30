@@ -12,5 +12,7 @@ urlpatterns = [
     path("recommendationByItem", views.recommendationByItem, name='recommendationByItem'),
     path("generateImage", views.generateImage, name='generateImage'),
     path("generatePrompt", views.generatePrompt, name='generatePrompt'),
+    path("searchItem", views.searchItem, name='searchItem'),
+    path("getPersonalizedItems", views.getPersonalizedItems, name='getPersonalizedItems'),
 
 ]

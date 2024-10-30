@@ -1,5 +1,4 @@
 from datetime import datetime
-import itertools
 from pig_data_processor import settings
 import os
 import pandas as pd
@@ -10,8 +9,9 @@ from pyspark.ml.evaluation import RegressionEvaluator
 import pandas as pd
 import numpy as np
 from tensorflow import keras
-import pprint
 from openai import OpenAI
+from fuzzywuzzy import process
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 from keras._tf_keras.keras.preprocessing.text import Tokenizer
 from keras._tf_keras.keras.models import Sequential
@@ -23,6 +23,8 @@ from keras._tf_keras.keras.optimizers import Adam
 import google.generativeai as genai
 from django.shortcuts import render
 from googleapiclient.discovery import build
+import re
+
 
 user_data_file_path = os.path.join(settings.STATIC_DIR, 'user_data','user_data_10k_rows.csv')
 user_item_ratings_data_file_path = os.path.join(settings.STATIC_DIR, 'user_ratings_data','user_item_ratings_ver2.csv')
@@ -37,17 +39,16 @@ user_gen_image_data_file_path = os.path.join(settings.STATIC_DIR, 'user_gen_imag
 def getUserInfoById(userId):
     print('Start of getUserInfoById service method')
     user_item_ratings_data = pd.read_csv(user_item_ratings_data_file_path, dtype=str)
+    itemData = getItemData()
     user_row_list = user_item_ratings_data[user_item_ratings_data['user_id'] == userId]
-
+    
     if user_row_list.empty:
         return None
-    
-    item_ratings_map = dict(zip(user_row_list['item_ids'], user_row_list['ratings']))
+    merged_data = user_row_list.merge(itemData[['item_id', 'item_url','item_desc_en']], left_on='item_ids', right_on='item_id', how='inner')
+    result = merged_data[['item_id','item_desc_en', 'ratings', 'item_url']].values.tolist()
     
     userId_and_purchaseHistory = {
-        'userId' : userId,
-        'item_ids': item_ratings_map
-        
+        'result': result
         }
     print('End of getUserInfoById service method')
     return userId_and_purchaseHistory
@@ -62,12 +63,13 @@ def getUserRecommendationByUserId(userId):
     if user_row_list.empty:
         return None
     
-    # item_info_map = dict(zip(user_row_list['item_id'], user_row_list['item_url']))
-    item_info_map = dict(zip(user_row_list['item_id'], [list(x) for x in zip(user_row_list['item_desc'], user_row_list['item_url'])]))
-    
+    item_info_list = [
+    [row['item_id'], row['item_desc'], row['item_url']] 
+    for _, row in user_row_list.iterrows()
+    ]
     user_recs = {
         'userId' : userId,
-        'item_info': item_info_map
+        'item_info': item_info_list
         
         }
     print('End of getUserRecommendationByUserId service method')
@@ -312,6 +314,10 @@ def recommend_similar_items(item_id, num_similar_items,userId,item):
     titlelookup_url = dict(zip(itemdata["item_id"],itemdata["item_url"])) # create a lookup dictionary
     records = []
 
+    searchedItem = itemdata[itemdata['item_id']==item_id]
+    records.append({'Searched item Id': searchedItem['item_id'].values[0], 'item_id': searchedItem['item_id'].values[0], 'item_desc':searchedItem['item_desc_en'].values[0], 'item_url':searchedItem['item_url'].values[0]})
+
+
     # Load the combined ALS and LSTM embeddings data
     als_model = ALSModel.load(als_model_file_path)
     als_item_factors = als_model.itemFactors.toPandas()
@@ -368,14 +374,20 @@ def recommend_similar_items(item_id, num_similar_items,userId,item):
     print('Search item', item_id)
     print(searched_item_desc)
     print(search_item_url)
-    top_item_recs = [records[0]['item_desc'], records[1]['item_desc']]
+    top_item_recs = [records[1]['item_desc'], records[2]['item_desc']]
     print(userId)
-    try:
-        generate_prompt_using_recs(top_item_recs,userId,item)
-    except Exception as ex:
-        print(f"Error getting generating prompt using item recs: {str(ex)}")
-    finally:
+
+    if item is None or str(item).strip()== "''":
+        print('--------------------------------------------------------------------->')
+        print(item)
         return records
+    else:
+        try:
+            generate_prompt_using_recs(top_item_recs,userId,item)
+        except Exception as ex:
+            print(f"Error getting generating prompt using item recs: {str(ex)}")
+        finally:
+            return records
 
 def normalize_vector(vector):
     norm = np.linalg.norm(vector)
@@ -407,7 +419,7 @@ def generate_prompt_using_recs(item_recs,userId,item):
     gemini = genai.GenerativeModel('gemini-1.5-flash')
     # Prompt for image generation
     prompt = item_recs_string + \
-         ", given the 3 items above, study the distinctive features and in less than 20 words, use those features and make a '{}'",format(item)
+         ", given the 3 items above, study the distinctive features and in less than 20 words, use those features and make a '{}' ,make it look realistic and only one item",format(item)
 
 
     #Generate the image
@@ -439,10 +451,11 @@ def generate_image(userId, prompt):
 
     image_data = response.data
     image_url = image_data[0].url
+    revised_prompt = image_data[0].revised_prompt
     print(image_url)
     print(response)
 
-    log_gen_image_to_csv(userId, image_url)
+    log_gen_image_to_csv(userId, image_url,prompt,revised_prompt)
 
     gen_image_obj = {
         "user_id" : userId,
@@ -451,11 +464,13 @@ def generate_image(userId, prompt):
 
     return gen_image_obj
 
-def log_gen_image_to_csv(user_id, image_url):
+def log_gen_image_to_csv(user_id, image_url,prompt,revised_prompt):
     # Create a DataFrame with the new log entry
     new_entry = {
         'user_id': user_id,
         'gen_image_url': image_url,
+        'prompt': clean_string(prompt),
+        'revised_prompt': revised_prompt,
         'timestamp': datetime.now()
     }
     df = pd.DataFrame([new_entry])
@@ -465,3 +480,54 @@ def log_gen_image_to_csv(user_id, image_url):
         df.to_csv(user_gen_image_data_file_path, mode='a', header=not pd.io.common.file_exists(user_gen_image_data_file_path), index=False)
     except Exception as e:
         print("Error writing to CSV:", e)
+
+def search_items(search_term, top_n=40):
+    # Preprocessing: Convert search term to lowercase
+    item_data = getItemData()
+    search_term = search_term.lower()
+
+    # Fuzzy match to get the closest item description
+    item_descriptions = item_data['item_desc_en'].str.lower().tolist()
+    closest_match = process.extractOne(search_term, item_descriptions)
+
+    # If a close match is found, use that as the corrected term
+    if closest_match and closest_match[1] > 60:  # You can adjust the threshold
+        search_term = closest_match[0]
+
+    # Add search term to the item data for comparison
+    item_data['combined'] = item_data['item_desc_en'].str.lower()
+
+    # Vectorize descriptions using TF-IDF
+    vectorizer = TfidfVectorizer()
+    tfidf_matrix = vectorizer.fit_transform(item_data['combined'].tolist() + [search_term])
+
+    # Calculate cosine similarity
+    cosine_sim = cosine_similarity(tfidf_matrix[-1], tfidf_matrix[:-1])
+
+    # Get the top N indices based on similarity scores
+    top_indices = cosine_sim.argsort()[0][::-1][:top_n]
+
+    result = {
+        "result" : item_data.iloc[top_indices].values.tolist()
+    }
+
+    # Return the top items based on indices
+    return result
+
+def getGeneratedImages(userId):
+    genImageData = pd.read_csv(user_gen_image_data_file_path,dtype=str)
+    user_rows = genImageData[genImageData['user_id']==userId]
+    result = user_rows.to_dict(orient='records')
+    return result
+
+def clean_string(input_string):
+    # Replace commas with spaces
+    cleaned_string = input_string.replace(',', ' ')
+    
+    # Remove all symbols (keeping only alphanumeric characters and spaces)
+    cleaned_string = re.sub(r'[^a-zA-Z0-9\s]', '', cleaned_string)
+    
+    # Optionally, strip leading/trailing whitespace
+    cleaned_string = cleaned_string.strip()
+    
+    return cleaned_string

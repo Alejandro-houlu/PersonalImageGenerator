@@ -22,11 +22,12 @@ export class ShopGridComponent implements OnInit, AfterViewInit{
   ){}
   userRec: any;
   userId!: any;
-  items: {name:string, url:string}[]= [];
+  items:[]= [];
   tag: boolean = true
   tagText: string = 'New'
   desRate: string = '$16.00'
   rate: string = '$21.00'
+  searchTerm:string =''
 
 
 
@@ -39,10 +40,7 @@ export class ShopGridComponent implements OnInit, AfterViewInit{
       .then(res=>{
         console.info(res)
         this.userRec = res
-        this.items = Object.keys(res.item_info).map(key =>({
-          name: res.item_info[key][0],
-          url: res.item_info[key][1]
-        }))
+        this.items = res.item_info
         console.info(this.items)
       }).catch(err => {
         console.error(err)

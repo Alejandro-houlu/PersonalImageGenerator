@@ -16,4 +16,12 @@ export class userServices{
         })
     }
 
+    getUserHistory(userId:String){
+        let userIdObj = {"userId": userId}
+        return firstValueFrom(
+            this.http.post<any>('api/userInfo',userIdObj)
+        ).then(res => res)
+        .catch(err => console.info(err))
+    }
+
 }

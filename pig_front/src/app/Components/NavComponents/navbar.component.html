@@ -22,12 +22,17 @@
                 <!-- Dropdown menu -->
                 <div class="dropdown-menu absolute overflow-hidden end-0 m-0 mt-5 z-10 md:w-52 w-48 rounded-md bg-white dark:bg-slate-900 shadow dark:shadow-gray-800" [ngClass]="searchManu ? '' : 'hidden' ">
                     <div class="relative">
-                        <i data-feather="search" class="absolute size-4 top-[9px] end-3 text-slate-900 dark:text-white"></i>
-                        <input type="text" class="h-9 px-3 pe-10 w-full border-0 focus:ring-0 outline-none bg-white dark:bg-slate-900" name="s" id="searchItem" placeholder="Search...">
+                            <button type="button" (click)="onSearchButtonClick()" 
+                                class="absolute top-[6px] end-3 bg-transparent border-0 p-0 cursor-pointer text-slate-900 dark:text-white">
+                                <i data-feather="search" class="size-4"></i>
+                            </button>
+                        <!-- <i data-feather="search" class="absolute size-4 top-[9px] end-3 text-slate-900 dark:text-white"></i> -->
+                        <input type="text" (input)="onSearchInput($event)" class="h-9 px-3 pe-10 w-full border-0 focus:ring-0 outline-none bg-white dark:bg-slate-900" name="s" id="searchItem" placeholder="Search...">
                     </div>
                 </div>
             </li>
 
+            <!-- Hardcoded section -->
             <li class="dropdown inline-block relative ps-0.5" (clickOutside)="closeCartModal()">
                 <button class="dropdown-toggle size-9 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-base text-center rounded-full bg-orange-500 border border-orange-500 text-white" type="button" (click)="cartModal()">
                     <i data-feather="shopping-cart" class="h-4 w-4"></i>
@@ -94,6 +99,7 @@
                     </ul>
                 </div>
             </li>
+            <!-- End of hardcorded section for aestetics -->
 
             <li class="inline-block ps-0.5">
                 <a href="#" class="size-9 inline-flex items-center justify-center tracking-wide align-middle duration-500 text-base text-center rounded-full bg-orange-500 text-white">
@@ -137,15 +143,15 @@
             <!-- Navigation Menu-->
             <ul class="navigation-menu">
                 <li class="has-submenu parent-parent-menu-item">
-                    <a [routerLink]="['/history']">History</a>
+                    <a [routerLink]="['/history',userId]">History</a>
             
 
                 <li class="has-submenu parent-parent-menu-item">
-                    <a [routerLink]="['/shop']">Shop</a>
+                    <a [routerLink]="['/shop',userId]">Shop</a>
                 </li>
         
-                <li class="has-submenu parent-parent-menu-item" [ngClass]="['/aboutus', '/user-account', '/user-billing','/user-payment','/user-invoice','/user-social','/user-notification','/user-setting','/blogs','/blog-detail','/career','/helpcenter','/helpcenter-faqs','/helpcenter-guides','/helpcenter-support','/terms','/privacy','/page-item','/user-item','/mail-item','/blog-item','/help-item','/auth-item','/utility-item','/special-item','/multi-item','/multi-item-1'].includes(manu) ? 'active' : ''">
-                    <a href="#">About us</a>
+                <li class="has-submenu parent-parent-menu-item">
+                    <a [routerLink]="['/personalImages',userId]">Just for you</a>
                 </li>
         
                 <li><a routerLink="#" class="sub-menu-item">Sale</a></li>
