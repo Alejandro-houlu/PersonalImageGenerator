@@ -1,0 +1,6 @@
+.image-container {
+    width: 200px; /* Set the desired fixed width */
+    height: 300px; /* Set the desired fixed height */
+    overflow: hidden; /* Hide overflow to maintain aspect ratio */
+    position: relative; /* Allow positioning of child elements */
+}

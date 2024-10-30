@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, Input, input } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ClickOutsideModule } from 'ng-click-outside';
 import * as feather from 'feather-icons';
@@ -13,6 +13,7 @@ import * as feather from 'feather-icons';
 })
 export class NavbarComponent {
 
+  @Input() userId!: string
   toggleManu:boolean = false;
   manu:string = '';
   subManu: string = '';

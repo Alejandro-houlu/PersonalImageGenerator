@@ -424,7 +424,7 @@ def generate_prompt_using_recs(item_recs,userId,item):
 
 def generate_image(userId, prompt):
 
-    openai_api_key=os.getenv('openai_key')
+    openai_api_key=os.getenv('OPENAI_KEY')
 
     # Set your API key
     client = OpenAI(api_key=openai_api_key)

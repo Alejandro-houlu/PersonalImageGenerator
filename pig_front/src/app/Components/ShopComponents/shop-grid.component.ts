@@ -1,37 +1,59 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NavbarComponent } from '../NavComponents/navbar.component';
+import { userServices } from '../../Services/userServices';
+import * as feather from 'feather-icons';
+
 
 @Component({
   selector: 'app-shop-grid',
   standalone: true,
   imports: [CommonModule, RouterLink,NavbarComponent],
   templateUrl: './shop-grid.component.html',
-  styleUrl: './shop-grid.component.scss'
-})
-export class ShopGridComponent {
+  styleUrl: './shop-grid.component.scss',
+  providers: [userServices]
 
-  product =
+})
+export class ShopGridComponent implements OnInit, AfterViewInit{
+
+  constructor(private userSvc:userServices,
+    private activatedRoute:ActivatedRoute
+  ){}
+  userRec: any;
+  userId!: any;
+  items: {name:string, url:string}[]= [];
+  tag: boolean = true
+  tagText: string = 'New'
+  desRate: string = '$16.00'
+  rate: string = '$21.00'
+
+
+
+  ngOnInit(): void {
+
+    this.userId = { "userId" :this.activatedRoute.snapshot.params['userId']}
+    console.info(this.userId)
+
+    this.userSvc.login(this.userId)
+      .then(res=>{
+        console.info(res)
+        this.userRec = res
+        this.items = Object.keys(res.item_info).map(key =>({
+          name: res.item_info[key][0],
+          url: res.item_info[key][1]
+        }))
+        console.info(this.items)
+      }).catch(err => {
+        console.error(err)
+      })
+
+  }
   
-  [
-    {
-        "id":1,
-        "image":"assets/images/shop/black-print-t-shirt.jpg",
-        "tagText":"-40% Off",
-        "name":"Black Print T-Shirt",
-        "desRate":"$16.00",
-        "rate":"$21.00",
-        "tag":true
-    },
-    {
-        "id":2,
-        "image":"assets/images/shop/fashion-shoes-sneaker.jpg",
-        "tagText":"New",
-        "name":"Fashion Shoes Sneaker",
-        "desRate":"$16.00",
-        "rate":"$21.00"
-    }
-  ]
+
+  ngAfterViewInit(): void {
+    feather.replace()
+
+  }
 
 }

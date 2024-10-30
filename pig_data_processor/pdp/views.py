@@ -17,17 +17,20 @@ def pong(request):
         return HttpResponse('invalid request',status=400)
 
 @csrf_exempt
-@require_GET
+@require_POST
 def userInfo(request):
-    userId = request.GET.get('userId')
+    data = json.loads(request.body)
+    userId = data.get('userId')
     userId_and_purchaseHistory = services.getUserInfoById(userId) # Object
     response_json = json.dumps(userId_and_purchaseHistory)
     return HttpResponse(response_json, status=200)
 
 @csrf_exempt
-@require_GET
+@require_POST
 def recommendationByUser(request):
-    userId = request.GET.get('userId')
+    data = json.loads(request.body)
+    userId = data.get('userId')
+    print(userId)    
     userId_and_purchaseHistory = services.getUserRecommendationByUserId(userId) # Object
     response_json = json.dumps(userId_and_purchaseHistory)
     return HttpResponse(response_json, status=200)
