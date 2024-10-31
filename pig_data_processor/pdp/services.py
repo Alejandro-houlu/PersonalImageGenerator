@@ -1,4 +1,7 @@
 from datetime import datetime
+import mimetypes
+
+import requests
 from pig_data_processor import settings
 import os
 import pandas as pd
@@ -24,6 +27,8 @@ import google.generativeai as genai
 from django.shortcuts import render
 from googleapiclient.discovery import build
 import re
+import boto3
+from django.core.files.base import ContentFile
 
 
 user_data_file_path = os.path.join(settings.STATIC_DIR, 'user_data','user_data_10k_rows.csv')
@@ -34,6 +39,16 @@ user_recommendation_file_path = os.path.join(settings.STATIC_DIR, 'recommendatio
 als_model_file_path = os.path.join(settings.STATIC_DIR, 'models','cf_als')
 lstm_embeddings_file_path = os.path.join(settings.STATIC_DIR, 'models','lstm_embeddings.csv')
 user_gen_image_data_file_path = os.path.join(settings.STATIC_DIR, 'user_gen_image_data','user_gen_image_data.csv')
+
+bucket_name ='pig'
+
+s3 = boto3.client(
+    's3',
+    region_name='sgp1',
+    endpoint_url='https://sgp1.digitaloceanspaces.com/',
+    aws_access_key_id=os.getenv('ACCESS_KEY'),
+    aws_secret_access_key=os.getenv('SECRET_KEY')
+)
 
 
 def getUserInfoById(userId):
@@ -450,12 +465,13 @@ def generate_image(userId, prompt):
     )
 
     image_data = response.data
-    image_url = image_data[0].url
+    timestamp = datetime.now()
+    image_url = uploadImage(image_data[0].url,userId,str(timestamp))
     revised_prompt = image_data[0].revised_prompt
     print(image_url)
     print(response)
 
-    log_gen_image_to_csv(userId, image_url,prompt,revised_prompt)
+    log_gen_image_to_csv(userId, image_url,prompt,revised_prompt,timestamp)
 
     gen_image_obj = {
         "user_id" : userId,
@@ -464,14 +480,14 @@ def generate_image(userId, prompt):
 
     return gen_image_obj
 
-def log_gen_image_to_csv(user_id, image_url,prompt,revised_prompt):
+def log_gen_image_to_csv(user_id, image_url,prompt,revised_prompt,timestamp):
     # Create a DataFrame with the new log entry
     new_entry = {
         'user_id': user_id,
         'gen_image_url': image_url,
         'prompt': clean_string(prompt),
         'revised_prompt': revised_prompt,
-        'timestamp': datetime.now()
+        'timestamp': timestamp
     }
     df = pd.DataFrame([new_entry])
 
@@ -531,3 +547,36 @@ def clean_string(input_string):
     cleaned_string = cleaned_string.strip()
     
     return cleaned_string
+
+# Test upload
+def uploadImage(image_url,userId,timestamp):
+    # Download the image
+    response = requests.get(image_url)
+    if response.status_code != 200:
+        raise ValueError(f"Failed to download image: {response.status_code}")
+    
+    print(response)
+    # Prepare the file for upload
+    image_data = ContentFile(response.content)
+    print(image_data)
+
+    s3_path = os.path.join('Pig','Pig '+ userId,'generatedItems',timestamp).replace('\\','/')
+    content_type = response.headers.get('Content-Type', 'application/octet-stream')
+    print(content_type)
+
+    
+    try:
+        s3.upload_fileobj(image_data, bucket_name, s3_path,
+                        ExtraArgs={'ACL': 'public-read',
+                                    'ContentType': content_type, 
+                                    'Metadata':
+                                        {'username': userId}})
+    except Exception as ex:
+        print('An error occured in upload result service')
+        return None
+    
+    file_url = f"https://pig.sgp1.digitaloceanspaces.com/{s3_path}"
+
+    print(file_url)
+
+    return file_url
