@@ -77,14 +77,14 @@ def recommendationByItem(request):
     print(userId)
     print('Search term------------------->',item)
     try:
-        recommendedItems = services.recommend_similar_items(itemId, 5, userId,item)
+        recommendedItems = services.recommend_similar_items(itemId, 7, userId,item)
         response_json = json.dumps(recommendedItems)
         return HttpResponse (response_json, status=200)
     except Exception as ex:
         print(f"Error getting item recommendation: {str(ex)}")
         return HttpResponse ('Error getting item recommendation', status=400)
 
-# The following 2 apis are just for testing, users will not have access to them - they don't work now 
+# The following 3 apis are just for testing, users will not have access to them - they don't work now 
 # To make them work, add the right params, see services methods for the right params
 @csrf_exempt
 @require_GET
@@ -98,6 +98,17 @@ def generateImage(request):
     imageUrl = services.generate_image('00004557432be3eeec63b4926113154e', 't-shirt')
     response_json = json.dumps(imageUrl)
     return HttpResponse (response_json, status=200)
+
+@csrf_exempt
+@require_GET
+def uploadImage(request):
+    imageUrl = request.GET.get('imageUrl')
+    userId = request.GET.get('userId')
+    timestamp = '2024-10-30 17:19:11.871431'
+    file_url = services.testUpload(imageUrl, userId,timestamp)
+    response_json = json.dumps(file_url)
+    return HttpResponse (response_json, status=200)
+
 
 @csrf_exempt
 @require_GET

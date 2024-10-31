@@ -14,5 +14,6 @@ urlpatterns = [
     path("generatePrompt", views.generatePrompt, name='generatePrompt'),
     path("searchItem", views.searchItem, name='searchItem'),
     path("getPersonalizedItems", views.getPersonalizedItems, name='getPersonalizedItems'),
+    path("uploadImage", views.uploadImage, name='uploadImage'),
 
 ]
