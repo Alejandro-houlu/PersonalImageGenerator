@@ -250,20 +250,14 @@ def retrieve_user_recommendations(userRecs,user_dict,item_dict,itemLookup,itemlo
     records = []
     print('We are in retrieve user recs')
     for i in userRecs2:
-        print(i)
         user_id = user_dict[i[0]]
-        print("Recommend for User ID:", user_id)
-        print()
         for rec in i[1]:
             item_id = item_dict[rec[0]]
-            print(item_id)
             if item_id not in itemLookup:
                 continue
             item_desc = itemLookup[item_id]
             item_url = itemlookup_url[item_id]
-            print(item_desc)
             records.append({'user_id': user_id, 'item_id': item_id, 'item_desc':item_desc, 'item_url':item_url})
-        print()
     
     df = pd.DataFrame(records)
     df.to_csv(recommendation_file_outpath + '/user_recommendations_CF_ALS.csv', index=False)
